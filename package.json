@@ -14,15 +14,19 @@
     "build": "node build/build.js"
   },
   "dependencies": {
-    "vue": "^2.5.2",
-    "vue-router": "^3.0.1",
     "@fortawesome/fontawesome-svg-core": "^1.2.28",
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
     "@fortawesome/vue-fontawesome": "^0.1.9",
+    "axios": "^0.19.2",
+    "js-cookie": "^2.2.1",
     "register-service-worker": "^1.7.1",
-    "vuex": "^3.3.0",
+    "vue": "^2.5.2",
+    "vue-axios": "^2.1.5",
+    "vue-beauty": "^2.0.0-beta.19",
     "vue-mobile-detection": "^1.0.0",
-    "vuedraggable": "^2.23.2"
+    "vue-router": "^3.0.1",
+    "vuedraggable": "^2.23.2",
+    "vuex": "^3.3.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

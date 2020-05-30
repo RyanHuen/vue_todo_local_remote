@@ -143,6 +143,14 @@ export default new Vuex.Store({
         state.editingTodo = null
       }
     },
+    [Type.EDIT_OVERRIDE_REMOTE] (state, payload) {
+      Storage.save(state.todos)
+      Storage.doOverrideRemotePromise(state.todos)
+    },
+    [Type.EDIT_OVERRIDE_LOCAL] (state, payload) {
+      Storage.save(state.todos)
+      Storage.doOverrideLocalPromise()
+    },
     changeFilter (state, payload) {
       state.selectedState = payload.data
     }
@@ -178,6 +186,12 @@ export default new Vuex.Store({
     },
     changeFilter ({commit}, options) {
       commit('changeFilter', {data: options})
+    },
+    [Type.EDIT_OVERRIDE_REMOTE] ({commit}, id) {
+      commit(Type.EDIT_OVERRIDE_REMOTE, {data: id})
+    },
+    [Type.EDIT_OVERRIDE_LOCAL] ({commit}, id) {
+      commit(Type.EDIT_OVERRIDE_LOCAL, {data: id})
     }
   }
 })

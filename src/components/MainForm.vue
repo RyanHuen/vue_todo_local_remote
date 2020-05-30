@@ -89,7 +89,7 @@ export default {
 
 .contents-box {
   width: calc(100% - 280px);
-  padding: 0 20px;
+  padding: 50px 20px;
 }
 
 .contents-box__mobile {

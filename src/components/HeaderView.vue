@@ -1,7 +1,9 @@
 <template>
   <div class="header-container">
       <!-- 登録フォーム -->
-      <form class="input-form" @submit.prevent="doAdd">
+    <v-button type="danger" @click="doOverrideRemotePromise">本地覆盖服务端数据</v-button>
+    <v-button type="danger" @click="doOverrideLocalPromise">服务端覆盖本地数据</v-button>
+    <form class="input-form" @submit.prevent="doAdd">
         <label class="form-label" for="comment">Todo</label>
         <input class="input-comment flex-grow-1" type="text" id="comment" ref="comment">
         <button type="submit" class="btn-regular">OK</button>
@@ -91,6 +93,12 @@ export default {
     },
     switchRemoveButton: function () {
       this.$store.dispatch(Type.SWITCH_REMOVE_BTN)
+    },
+    doOverrideRemotePromise: function () {
+      this.$store.dispatch(Type.EDIT_OVERRIDE_REMOTE)
+    },
+    doOverrideLocalPromise: function () {
+      this.$store.dispatch(Type.EDIT_OVERRIDE_LOCAL)
     }
   },
   computed: {
@@ -178,6 +186,20 @@ export default {
 }
 
 .btn-red:hover {
+  color: #fff;
+  background-color: #dc3545;
+}
+
+.btn-sync {
+  color:  #fff;
+  border-color: #dc3545;
+  background-color: #0d0e17;
+  margin: .25rem;
+  padding: 10px 4px;
+  outline: none;
+}
+
+.btn-sync:hover {
   color: #fff;
   background-color: #dc3545;
 }
