@@ -1,13 +1,14 @@
 <template>
   <div class="header-container">
       <!-- 登録フォーム -->
+
     <v-button type="danger" @click="doOverrideRemotePromise">本地覆盖服务端数据</v-button>
     <v-button type="danger" @click="doOverrideLocalPromise">服务端覆盖本地数据</v-button>
-    <form class="input-form" @submit.prevent="doAdd">
-        <label class="form-label" for="comment">Todo</label>
-        <input class="input-comment flex-grow-1" type="text" id="comment" ref="comment">
-        <button type="submit" class="btn-regular">OK</button>
-      </form>
+    <v-form direction="horizontal" class="input-form" @submit.prevent="doAdd">
+      <v-tag color="blue-inverse" class="form-label" for="aa">Todo</v-tag>
+      <v-input type="text" placeholder="输入ToDo项" size="large" class="input-comment flex-grow-1" id="comment" ref="comment"></v-input>
+      <v-button html-type="submit" size="large" type="submit" @click="doAdd">确定</v-button>
+    </v-form>
 
       <div class="status-boxes">
         <label>
@@ -51,11 +52,11 @@ export default {
     // eslint-disable-next-line
     doAdd: function (event, value) {
       let comment = this.$refs.comment
-      if (!comment.value.length) return
+      if (!comment.innerValue.length) return
 
-      this.$store.dispatch(Type.ADD_TASK, comment.value)
+      this.$store.dispatch(Type.ADD_TASK, comment.innerValue)
 
-      comment.value = ''
+      comment.innerValue = ''
     },
     /**
      * 各ステータスのタスク数
@@ -129,9 +130,8 @@ export default {
 .form-label {
   display: flex;
   font-size: 1rem;
-  border: 1px solid #979797;
-  background: #faf9f9;
   line-height: 1.5;
+  height: auto;
   padding: .25rem .5rem;
   text-align: center;
   vertical-align: baseline;

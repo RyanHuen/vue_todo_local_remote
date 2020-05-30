@@ -54,21 +54,19 @@ export default {
 .fix-top {
   top: 0;
   left: 0;
-  position: fixed;
   width: calc(100% - 280px);
-  height: 100px;
+  height: auto;
 }
 
 .fix-top__mobile {
   top: 0;
   left: 0;
-  position: fixed;
   width: 100%;
-  height: 100px;
+  height: auto;
 }
 
 .main-view {
-  padding-top: 100px;
+  padding-top: 10em;
 }
 
 .side-view {
@@ -89,12 +87,13 @@ export default {
 
 .contents-box {
   width: calc(100% - 280px);
-  padding: 50px 20px;
+  /*padding: 50px 20px;*/
 }
 
 .contents-box__mobile {
   width: 100%;
   padding: 0;
+  height: auto;
 }
 
 @media screen and (max-width: 650px) {
