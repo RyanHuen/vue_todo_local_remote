@@ -1,3 +1,7 @@
+# 鸣谢
+- 最初版本来自https://github.com/skysan87/vue-todolist
+- 我因为自己的博客需要这样的功能，所以针对这位作者的源码进行了改进和UI修改
+
 # frontend
 
 > Blog vue ui module
