@@ -20,7 +20,7 @@ function getFilteredArray (array, option, isAllSelected) {
 export default new Vuex.Store({
   state: {
     todos: Storage.fetch(),
-    selectedState: [TaskState.Todo.value, TaskState.InProgress.value],
+    selectedState: [TaskState[0].value, TaskState[1].value],
     lastUid: 0,
     canRemove: false,
     editingTodo: null
@@ -67,7 +67,7 @@ export default new Vuex.Store({
       const todo = new Todo()
       todo.id = state.lastUid + 1
       todo.comment = payload.data
-      todo.state = TaskState.Todo.value
+      todo.state = TaskState[0].value
 
       state.todos.push(todo)
       Storage.save(state.todos)
@@ -87,14 +87,14 @@ export default new Vuex.Store({
       let item = state.todos[index]
 
       switch (item.state) {
-        case TaskState.Todo.value:
-          item.state = TaskState.InProgress.value
+        case TaskState[0].value:
+          item.state = TaskState[1].value
           break
-        case TaskState.InProgress.value:
-          item.state = TaskState.Done.value
+        case TaskState[1].value:
+          item.state = TaskState[2].value
           break
-        case TaskState.Done.value:
-          item.state = TaskState.Todo.value
+        case TaskState[2].value:
+          item.state = TaskState[0].value
           break
       }
       Storage.save(state.todos)
@@ -118,7 +118,7 @@ export default new Vuex.Store({
       Storage.save(state.todos)
     },
     [Type.DELETE_DONE] (state) {
-      let options = [TaskState.Todo.value, TaskState.InProgress.value]
+      let options = [TaskState[0].value, TaskState[1].value]
       state.todos = getFilteredArray(state.todos, options, false)
       Storage.save(state.todos)
 
@@ -151,7 +151,7 @@ export default new Vuex.Store({
       Storage.save(state.todos)
       Storage.doOverrideLocalPromise()
     },
-    changeFilter (state, payload) {
+    [Type.CHANGE_FILTER] (state, payload) {
       state.selectedState = payload.data
     }
   },
@@ -184,8 +184,8 @@ export default new Vuex.Store({
     [Type.EDIT_MODE] ({commit}, params) {
       commit(Type.EDIT_MODE, params)
     },
-    changeFilter ({commit}, options) {
-      commit('changeFilter', {data: options})
+    [Type.CHANGE_FILTER] ({commit}, options) {
+      commit(Type.CHANGE_FILTER, {data: options})
     },
     [Type.EDIT_OVERRIDE_REMOTE] ({commit}, id) {
       commit(Type.EDIT_OVERRIDE_REMOTE, {data: id})

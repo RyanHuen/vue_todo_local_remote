@@ -5,7 +5,7 @@
       <div class="list-group">
         <draggable v-model="filteredTodos" @end="onDragEnd"
                   handle=".move-icon">
-          <todo-item class="list-group-item"
+          <todo-item
             v-for="item in filteredTodos"
             :key="item.id"
             :todo="item"
@@ -117,29 +117,6 @@ export default {
 
 .main-content {
   padding-top: 10px;
-}
-
-.list-group {
-  border-left: 1px solid #979797;
-  border-right: 1px solid #979797;
-  margin: 0 15px;
-}
-
-.list-group-item:first-child {
-  border-top: 1px solid #979797;
-}
-
-.list-group-item {
-  border-bottom: 1px solid #979797;
-}
-
-/* ドラッグするアイテム */
-.sortable-chosen {
-  opacity: 0.3;
-}
-
-.sortable-ghost {
-  background-color:#979797;
 }
 
 </style>

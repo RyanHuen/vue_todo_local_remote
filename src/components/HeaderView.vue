@@ -2,8 +2,8 @@
   <div class="header-container">
       <!-- 登録フォーム -->
 
-    <v-button type="danger" @click="doOverrideRemotePromise">本地覆盖服务端数据</v-button>
-    <v-button type="danger" @click="doOverrideLocalPromise">服务端覆盖本地数据</v-button>
+    <v-button type="success" @click="doOverrideRemotePromise">本地覆盖服务端数据</v-button>
+    <v-button type="success" @click="doOverrideLocalPromise">服务端覆盖本地数据</v-button>
     <v-form direction="horizontal" class="input-form" @submit.prevent="doAdd">
       <v-tag color="blue-inverse" class="form-label" for="aa">Todo</v-tag>
       <v-input type="text" placeholder="输入ToDo项" size="large" class="input-comment flex-grow-1" id="comment" ref="comment"></v-input>
@@ -11,28 +11,24 @@
     </v-form>
 
       <div class="status-boxes">
-        <label>
-          <input type="checkbox" v-model="isAllSelected" @click="selectAll">
+        <v-checkbox :indeterminate="indeterminate" v-model="isAllSelected" @click="checkAll">
           <span class="status-label">All</span>
           <span class="badge" v-bind:class="badgeColor(-1)">
             {{ todoCounts(-1) }}
           </span>
-        </label>
-        <label v-for="viewOp in options" v-bind:key="viewOp.value" >
-          <input type="checkbox" v-model="filterOption" :value="viewOp.value" @change="filterChanged">
-          <span class="status-label">{{ viewOp.label }}</span>
-          <span class="badge" v-bind:class="badgeColor(viewOp.value)">
-            {{ todoCounts(viewOp.value) }}
-          </span>
-        </label>
-        <button v-if="!$isMobile()" class="modal-btn btn-red" @click="deleteDone">Clear Done</button>
-        <button v-if="!$isMobile()" class="modal-btn btn-switch-green" :class="{'switch-on': canRemove}" @click="switchRemoveButton">Edit</button>
+        </v-checkbox>
+
+        <v-checkbox-group :data="options" v-model="filterOption" @change="setState"></v-checkbox-group>
+
+        <v-button v-if="!$isMobile()" type="danger" class="todo-edit" @click="deleteDone">Clear Done</v-button>
+        <v-button v-if="!$isMobile()" type="primary" class="todo-edit" :class="{'switch-on': canRemove}" @click="switchRemoveButton">Edit</v-button>
       </div>
     </div>
 </template>
 
 <script>
-import { TaskState } from '@/util/TaskState'
+import { TaskState, TaskStateValue } from '@/util/TaskState'
+
 import { Type } from '@/store/mutation-types'
 import { getStateColor } from '@/util/StateColor'
 
@@ -40,7 +36,9 @@ export default {
   name: 'HeaderView',
   data () {
     return {
+      indeterminate: true,
       options: Object.values(TaskState),
+      allOptionsValue: Object.values(TaskStateValue),
       filterOption: this.$store.getters.getSelectedState,
       isAllSelected: false
     }
@@ -76,16 +74,18 @@ export default {
     selectAll: function () {
       if (!this.isAllSelected) {
         this.filterOption = []
-        this.options.forEach((op) => this.filterOption.push(op.value))
+        this.options.forEach((op) => {
+          this.filterOption.push(op)
+        })
       } else {
         this.filterOption = []
       }
-      this.$store.dispatch('changeFilter', this.filterOption)
+      this.$store.dispatch(Type.CHANGE_FILTER, this.filterOption)
     },
-    filterChanged: function () {
-      this.isAllSelected = this.options.length === this.filterOption.length
-      this.$store.dispatch('changeFilter', this.filterOption)
-    },
+    // filterChanged: function () {
+    //   this.isAllSelected = this.options.length === this.filterOption.length
+    //   this.$store.dispatch(Type.CHANGE_FILTER, this.filterOption)
+    // },
     /**
      * 完了済みのタスクを削除
      */
@@ -100,6 +100,28 @@ export default {
     },
     doOverrideLocalPromise: function () {
       this.$store.dispatch(Type.EDIT_OVERRIDE_LOCAL)
+    },
+    onChange (value) {
+      this.filterOption = value
+      this.isAllSelected = this.options.length === this.filterOption.length
+      this.$store.dispatch(Type.CHANGE_FILTER, this.filterOption)
+    },
+    checkAll () {
+      if (this.filterOption.length === this.options.length) {
+        this.filterOption = []
+        this.isAllSelected = false
+        this.indeterminate = true
+      } else {
+        this.filterOption = this.allOptionsValue
+        this.isAllSelected = true
+        this.indeterminate = false
+      }
+      this.$store.dispatch(Type.CHANGE_FILTER, this.filterOption)
+    },
+    setState () {
+      this.indeterminate = this.filterOption.length > 0 && this.filterOption.length < this.options.length
+      this.isAllSelected = this.filterOption.length === this.options.length
+      this.$store.dispatch(Type.CHANGE_FILTER, this.filterOption)
     }
   },
   computed: {
@@ -202,5 +224,9 @@ export default {
 .btn-sync:hover {
   color: #fff;
   background-color: #dc3545;
+}
+
+.todo-edit {
+  margin-right: 1em;
 }
 </style>

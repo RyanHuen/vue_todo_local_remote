@@ -1,5 +1,6 @@
 <template>
 <div>
+  <v-card  :bordered="false" :body-style="{padding:0}" class="todo-item-card" >
   <div :class="[{'flex-container__selected' : selected}, 'flex-container']">
     <div class="move-icon">
       <font-awesome-icon icon="ellipsis-v" size="xs"/>
@@ -19,6 +20,7 @@
       </div>
     </transition>
   </div>
+  </v-card>
 </div>
 </template>
 
@@ -67,13 +69,14 @@ export default {
 
 .flex-container {
   width: 100%;
+  height: auto;
   display: flex;
   padding: 0.25rem 0.5rem;
   background-color: #faf9f9;
 }
 
 .flex-container__selected {
-  background-color: rgb(187, 222, 250);
+  background-color: #108ee9bd;
 }
 
 .flex-container div {
@@ -108,4 +111,7 @@ export default {
   opacity: 0;
 }
 
+.todo-item-card {
+  margin-bottom: 1em;
+}
 </style>
