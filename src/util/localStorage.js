@@ -5,7 +5,7 @@ const STORAGE_KEY = 'vue-todolist'
 
 export default class Storage {
   static fetch () {
-    let todos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+    let todos = JSON.parse(localStorage.getItem(STORAGE_KEY + Storage.subTodoSetIdFromPath(window.location.pathname)) || '[]')
     if (todos.length <= 0) {
       alert('本地没有数据，尝试从服务端获取!')
       this.doOverrideLocalPromise(true)
@@ -17,7 +17,7 @@ export default class Storage {
   }
 
   static save (todos) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
+    localStorage.setItem(STORAGE_KEY + Storage.subTodoSetIdFromPath(window.location.pathname), JSON.stringify(todos))
   }
 
   static doOverrideRemotePromise (todos) {
@@ -26,7 +26,7 @@ export default class Storage {
     var todoSetId = Storage.subTodoSetIdFromPath(path)
     var json = {'todoSetId': todoSetId, 'todo': todoData}
 
-    localStorage.setItem(STORAGE_KEY, todoData)
+    Storage.save(todos)
     console.log('存储' + todoData)
     //
     // $.ajax({
