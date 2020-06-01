@@ -12,7 +12,7 @@
 
       <div class="status-boxes">
         <v-checkbox :indeterminate="indeterminate" v-model="isAllSelected" @click="checkAll">
-          <span class="status-label">All</span>
+          <span class="status-label">权限</span>
           <span class="badge" v-bind:class="badgeColor(-1)">
             {{ todoCounts(-1) }}
           </span>
@@ -20,8 +20,8 @@
 
         <v-checkbox-group :data="options" v-model="filterOption" @change="setState"></v-checkbox-group>
 
-        <v-button v-if="!$isMobile()" type="danger" class="todo-edit" @click="deleteDone">Clear Done</v-button>
-        <v-button v-if="!$isMobile()" type="primary" class="todo-edit" :class="{'switch-on': canRemove}" @click="switchRemoveButton">Edit</v-button>
+        <v-button v-if="!$isMobile()" type="danger" class="todo-edit" @click="deleteDone">清除完成</v-button>
+        <v-button v-if="!$isMobile()" type="primary" class="todo-edit" :class="{'switch-on': canRemove}" @click="switchRemoveButton">编辑</v-button>
       </div>
     </div>
 </template>

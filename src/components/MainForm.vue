@@ -70,7 +70,7 @@ export default {
 }
 
 .main-view {
-  padding-top: 10em;
+  padding-top: 1em;
 }
 
 .side-view {

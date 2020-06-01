@@ -11,27 +11,28 @@
       </div>
 
       <div class="modal-body">
-        <textarea class="input-text" v-model="todo.comment" rows="3" :readonly="readonly" :class="{'readonly': readonly}" />
+        <v-input class="input-text" v-model="todo.comment" :class="{'readonly': readonly}" :readonly="readonly" type="textarea" placeholder=""></v-input>
+
       </div>
       <div class="modal-body">
-        <textarea class="note" v-model="todo.note" maxlength="2000" rows="15" :readonly="readonly" :class="{'readonly': readonly}"/>
+        <v-input class="note" v-model="todo.note" rows="20" :class="{'readonly': readonly}" :readonly="readonly" type="textarea" placeholder=""></v-input>
       </div>
 
       <div class="modal-footer">
         <div v-if="readonly">
-          <button class="btn-regular modal-default-button" @click="readonly = false" :disabled="!canEdit">
+          <v-button type="primary" @click="readonly = false" :disabled="!canEdit">
             Edit
-          </button>
-          <button class="btn-default modal-default-button" @click="deleteTodo" :disabled="!canEdit">
+          </v-button>
+          <v-button type="primary" @click="deleteTodo" :disabled="!canEdit">
             Delete
-          </button>
-          <button class="btn-default modal-default-button" @click="clear">
+          </v-button>
+          <v-button type="primary" @click="clear">
             Clear
-          </button>
+          </v-button>
         </div>
         <div v-if="!readonly">
-          <button class="btn-regular modal-default-button" @click="update">OK</button>
-          <button class="btn-default modal-default-button" @click="cancel">Cancel</button>
+          <v-button type="primary" @click="update">OK</v-button>
+          <v-button type="primary" @click="cancel">Cancel</v-button>
         </div>
       </div>
   </div>
@@ -117,7 +118,7 @@ export default {
 .sidenav {
   margin: 30px auto 0;
   padding: 20px 10px;
-  background-color: #90CAF9;
+  background-color: #f9f4d6;
 }
 
 .radio-label {
@@ -168,13 +169,13 @@ export default {
 }
 
 .readonly {
-  background-color: #8a87871f;
+  /*background-color: #575757;*/
   resize: none;
 }
 
 .readonly::selection {
-  color: white;
-  background-color: blue;
+  /*color: white;*/
+  /*background-color: blue;*/
 }
 
 .left-20 {

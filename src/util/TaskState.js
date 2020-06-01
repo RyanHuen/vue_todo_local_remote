@@ -1,15 +1,15 @@
 export const TaskState = [
   {
     value: 0,
-    label: 'Todo'
+    label: '待完成'
   },
   {
     value: 1,
-    label: 'Doing'
+    label: '进行中'
   },
   {
     value: 2,
-    label: 'Done'
+    label: '已完成'
   }
 ]
 
