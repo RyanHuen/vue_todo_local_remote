@@ -96,10 +96,10 @@ export default {
       this.$store.dispatch(Type.SWITCH_REMOVE_BTN)
     },
     doOverrideRemotePromise: function () {
-      this.$store.dispatch(Type.EDIT_OVERRIDE_REMOTE)
+      if (confirm('是否用 "本地数据" 覆盖 "云端" ???')) { this.$store.dispatch(Type.EDIT_OVERRIDE_REMOTE) }
     },
     doOverrideLocalPromise: function () {
-      this.$store.dispatch(Type.EDIT_OVERRIDE_LOCAL)
+      if (confirm('是否用 "云端" 覆盖 "本地数据" ???')) { this.$store.dispatch(Type.EDIT_OVERRIDE_LOCAL) }
     },
     onChange (value) {
       this.filterOption = value
