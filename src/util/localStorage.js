@@ -6,6 +6,10 @@ const STORAGE_KEY = 'vue-todolist'
 export default class Storage {
   static fetch () {
     let todos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+    if (todos.length <= 0) {
+      alert('本地没有数据，尝试从服务端获取!')
+      this.doOverrideLocalPromise(true)
+    }
     todos.forEach((todo) => {
       todo['note'] = todo.note || ''
     })
@@ -55,7 +59,7 @@ export default class Storage {
     })
   }
 
-  static doOverrideLocalPromise () {
+  static doOverrideLocalPromise (silent) {
     // let todos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
     // todos.forEach((todo) => {
     //   todo['note'] = todo.note || ''
@@ -86,13 +90,19 @@ export default class Storage {
       }
       return false
     }).catch(() => {
-      alert('远端数据获取失败')
+      if (!silent) {
+        alert('远端数据获取失败')
+      }
     }).then((fetchResult) => {
       if (fetchResult) {
-        alert('远端数据获取成功')
+        if (!silent) {
+          alert('远端数据获取成功')
+        }
         window.location.reload()
       } else {
-        alert('远端数据获取失败')
+        if (!silent) {
+          alert('远端数据获取失败')
+        }
       }
     })
   }

@@ -149,7 +149,7 @@ export default new Vuex.Store({
     },
     [Type.EDIT_OVERRIDE_LOCAL] (state, payload) {
       Storage.save(state.todos)
-      Storage.doOverrideLocalPromise()
+      Storage.doOverrideLocalPromise(false)
     },
     [Type.CHANGE_FILTER] (state, payload) {
       state.selectedState = payload.data
