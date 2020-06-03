@@ -17,16 +17,15 @@ export default class Storage {
   }
 
   static save (todos) {
-    localStorage.setItem(STORAGE_KEY + Storage.subTodoSetIdFromPath(window.location.pathname), JSON.stringify(todos))
+    // localStorage.setItem(STORAGE_KEY + Storage.subTodoSetIdFromPath(window.location.pathname), JSON.stringify(todos))
+    Storage.doOverrideRemotePromise(todos, true)
   }
 
-  static doOverrideRemotePromise (todos) {
+  static doOverrideRemotePromise (todos, retry) {
     var todoData = JSON.stringify(todos)
     var path = window.location.pathname
     var todoSetId = Storage.subTodoSetIdFromPath(path)
     var json = {'todoSetId': todoSetId, 'todo': todoData}
-
-    Storage.save(todos)
     console.log('存储' + todoData)
     //
     // $.ajax({
@@ -51,10 +50,14 @@ export default class Storage {
       console.log(err)
       return false
     }).then((saveResult) => {
-      if (saveResult) {
-        alert('覆盖远端成功')
-      } else {
-        alert('覆盖远端失败')
+      if (!saveResult) {
+        if (retry) {
+          if (confirm('保存云端失败,是否重试？')) {
+            this.doOverrideRemotePromise(todos, false)
+          }
+        } else {
+          alert('经过重试仍旧无法保存到云，为防止数据丢失请不要关闭页面,稍后重试！！！')
+        }
       }
     })
   }
@@ -104,6 +107,37 @@ export default class Storage {
           alert('远端数据获取失败')
         }
       }
+    })
+  }
+
+  static fetchFromRemote (resolve, reject) {
+    var instance = axios.create({
+      headers: {'content-type': 'application/json', 'X-CSRFToken': Cookies.get('csrftoken')}
+    })
+    var path = window.location.pathname
+    var todoSetId = Storage.subTodoSetIdFromPath(path)
+    console.log('muxi todoSetId: ' + todoSetId)
+    if (todoSetId === undefined) {
+      reject()
+    }
+    var requestJson = {'todoSetId': todoSetId}
+    instance.post('/todo_list/query_todo/', JSON.stringify(requestJson)).then(function (res) {
+      var data = res.data
+      console.log(data)
+      if (data !== null) {
+        var todoContent = data['todo_content']
+        let todos = JSON.parse(todoContent)
+        todos.forEach((todo) => {
+          todo['note'] = todo.note || ''
+        })
+        // Storage.save(todos)
+        resolve(todos)
+      }
+      reject()
+    }).catch(() => {
+      reject()
+    }).then((fetchResult) => {
+      resolve(fetchResult)
     })
   }
 

@@ -31,6 +31,10 @@
           </v-button>
         </div>
         <div v-if="!readonly">
+          <p class="notify-date-picker">
+            <v-tag color="blue">邮件提醒时间 </v-tag>
+            <v-date-picker clearable show-time v-model="todo.notifyTimestamp" @change="onDateChange"></v-date-picker>
+          </p>
           <v-button type="primary" @click="update">OK</v-button>
           <v-button type="primary" @click="cancel">Cancel</v-button>
         </div>
@@ -61,6 +65,7 @@ export default {
       if (this.todo !== null && this.todo.id !== null) {
         // commentの改行コードを削除
         this.todo.comment = this.todo.comment.replace(/\r?\n/g, '')
+        this.todo.modifyTimestamp = Date.parse(new Date())
         this.lastTodo = new Todo()
         this.$store.dispatch(Type.UPDATE_TASK, this.todo)
         this.readonly = true
@@ -84,6 +89,9 @@ export default {
      */
     clear: function () {
       this.$store.dispatch(Type.EDIT_MODE, {id: null, editing: false})
+    },
+    onDateChange (time) {
+      console.log('change:', time)
     }
   },
   computed: {
@@ -180,5 +188,10 @@ export default {
 
 .left-20 {
   padding-left: 5px;
+}
+
+.notify-date-picker {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 </style>

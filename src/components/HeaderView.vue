@@ -40,7 +40,8 @@ export default {
       options: Object.values(TaskState),
       allOptionsValue: Object.values(TaskStateValue),
       filterOption: this.$store.getters.getSelectedState,
-      isAllSelected: false
+      isAllSelected: false,
+      needFetchRemote: false
     }
   },
   methods: {
@@ -128,7 +129,11 @@ export default {
     canRemove () {
       return this.$store.getters.getCanRemove
     }
+  },
+  mounted: function () {
+    this.$store.dispatch(Type.SYNC_ACTION, this.filterOption)
   }
+
 }
 </script>
 

@@ -19,7 +19,7 @@ function getFilteredArray (array, option, isAllSelected) {
 
 export default new Vuex.Store({
   state: {
-    todos: Storage.fetch(),
+    todos: [],
     selectedState: [TaskState[0].value, TaskState[1].value],
     lastUid: 0,
     canRemove: false,
@@ -144,15 +144,18 @@ export default new Vuex.Store({
       }
     },
     [Type.EDIT_OVERRIDE_REMOTE] (state, payload) {
-      Storage.save(state.todos)
-      Storage.doOverrideRemotePromise(state.todos)
+      // Storage.save(state.todos)
+      // Storage.doOverrideRemotePromise(state.todos)
     },
     [Type.EDIT_OVERRIDE_LOCAL] (state, payload) {
-      Storage.save(state.todos)
-      Storage.doOverrideLocalPromise(false)
+      // Storage.save(state.todos)
+      // Storage.doOverrideLocalPromise(false)
     },
     [Type.CHANGE_FILTER] (state, payload) {
       state.selectedState = payload.data
+    },
+    [Type.SYNC_ACTION] (state, payload) {
+      state.todos = payload.data
     }
   },
   // データの加工、非同期処理
@@ -192,6 +195,13 @@ export default new Vuex.Store({
     },
     [Type.EDIT_OVERRIDE_LOCAL] ({commit}, id) {
       commit(Type.EDIT_OVERRIDE_LOCAL, {data: id})
+    },
+    [Type.SYNC_ACTION] ({ commit }) {
+      return new Promise(Storage.fetchFromRemote).then(function (result) {
+        commit(Type.SYNC_ACTION, {data: result})
+      }).catch(function (reason) {
+        commit(Type.SYNC_ACTION, {data: JSON.parse('[{"id":1,"comment":"sdfd","state":0,"note":"aaa","createTimestamp":1591072257000,"modifyTimestamp":1591097498000,"notifyTimestamp":"2020-06-11 00:00"}]')})
+      })
     }
   }
 })
