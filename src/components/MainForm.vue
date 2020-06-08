@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import TestView from './TestView.vue'
+// import TestView from './TestView.vue'
 import HeaderView from './HeaderView.vue'
 import SideView from './SideView.vue'
 import TodoList from './TodoList.vue'
@@ -27,7 +27,7 @@ import TodoList from './TodoList.vue'
 export default {
   name: 'MainForm',
   components: {
-    HeaderView, SideView, TodoList, TestView
+    HeaderView, SideView, TodoList//, TestView
   },
   data () {
     return {

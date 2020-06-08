@@ -4,6 +4,9 @@ import Storage from '@/util/localStorage'
 import {Todo} from '@/util/Todo'
 import {TaskState} from '@/util/TaskState'
 import {Type} from './mutation-types'
+import axios from 'axios'
+import Cookies from 'js-cookie'
+import {formatDate} from '@/util/DateFormat'
 
 Vue.use(Vuex)
 
@@ -20,6 +23,7 @@ function getFilteredArray (array, option, isAllSelected) {
 export default new Vuex.Store({
   state: {
     todos: [],
+    todoName: '正在获取',
     selectedState: [TaskState[0].value, TaskState[1].value],
     lastUid: 0,
     canRemove: false,
@@ -56,6 +60,9 @@ export default new Vuex.Store({
     },
     getSelectedState: (state) => {
       return state.selectedState
+    },
+    getTodoName: (state) => {
+      return state.todoName
     }
   },
   // 状態の更新
@@ -68,6 +75,7 @@ export default new Vuex.Store({
       todo.id = state.lastUid + 1
       todo.comment = payload.data
       todo.state = TaskState[0].value
+      todo.notifyTimestamp = formatDate(new Date(), 'yyyy-MM-dd HH:mm:ss')
 
       state.todos.push(todo)
       Storage.save(state.todos)
@@ -155,7 +163,16 @@ export default new Vuex.Store({
       state.selectedState = payload.data
     },
     [Type.SYNC_ACTION] (state, payload) {
-      state.todos = payload.data
+      var result = payload.result
+      if (result === '') {
+        console.log('SYNC获取失败')
+        state.todos = []
+        state.todoName = '获取失败'
+      } else {
+        console.log('SYNC获取成功')
+        state.todos = result.todos
+        state.todoName = result.todoName
+      }
     }
   },
   // データの加工、非同期処理
@@ -197,11 +214,61 @@ export default new Vuex.Store({
       commit(Type.EDIT_OVERRIDE_LOCAL, {data: id})
     },
     [Type.SYNC_ACTION] ({ commit }) {
-      return new Promise(Storage.fetchFromRemote).then(function (result) {
-        commit(Type.SYNC_ACTION, {data: result})
-      }).catch(function (reason) {
-        commit(Type.SYNC_ACTION, {data: JSON.parse('[{"id":1,"comment":"sdfd","state":0,"note":"aaa","createTimestamp":1591072257000,"modifyTimestamp":1591097498000,"notifyTimestamp":"2020-06-11 00:00"}]')})
+      // return new Promise(Storage.fetchFromRemote).then(function (result) {
+      //   console.log('SYNC成功被回调')
+      //   commit(Type.SYNC_ACTION, {data: result})
+      // }).catch(function (reason) {
+      //   // var data = JSON.parse('{"name":"打卡TODO","todo_list":[{"createTimestamp":"2020-06-03 00:07:00","modifyTimestamp":"2020-06-03 00:07:00","notifyTimestamp":"2020-06-03 00:06:00","state":1,"comment":"Test_TITLE1","note":"TEST_CONTENT1"},{"createTimestamp":"2020-06-03 00:13:00","modifyTimestamp":"2020-06-03 00:13:00","notifyTimestamp":"2020-06-03 00:11:00","state":1,"comment":"TEST_TITLE2","note":"TEST_CONTENT2"}]}')
+      //   // var todoList = data['todo_list']
+      //   // var todoName = data['name']
+      //   // let todos = todoList
+      //   // var result = {
+      //   //   todoName: todoName,
+      //   //   todos: todos
+      //   // }
+      //   // commit(Type.SYNC_ACTION, {result: result})
+      //   console.log('SYNC失败被回调')
+      //
+      //   commit(Type.SYNC_ACTION, {result: ''})
+      // })
+
+      var instance = axios.create({
+        headers: {'content-type': 'application/json', 'X-CSRFToken': Cookies.get('csrftoken')}
       })
+      var path = window.location.pathname
+      var todoSetId = Storage.subTodoSetIdFromPath(path)
+      console.log('muxi todoSetId: ' + todoSetId)
+      if (todoSetId === undefined) {
+        commit(Type.SYNC_ACTION, {result: ''})
+        return
+      }
+      var requestJson = {'todoSetId': todoSetId}
+      return instance.post('/todo_list/query_todo/', JSON.stringify(requestJson))
+        .then(response => {
+          var data = response.data
+          console.log(data)
+          if (data !== null) {
+            var todoList = data['todo_list']
+            var todoName = data['name']
+            let todos = todoList
+            var result = {
+              todoName: todoName,
+              todos: todos
+            }
+            todos.forEach((todo) => {
+              todo['note'] = todo.note || ''
+            })
+            console.log('成功跑完' + result)
+            commit(Type.SYNC_ACTION, {result: result})
+          } else {
+            console.log('数据非法')
+            commit(Type.SYNC_ACTION, {result: ''})
+          }
+        })
+        .catch(function (error) {
+          console.log(error)
+          commit(Type.SYNC_ACTION, {result: ''})
+        })
     }
   }
 })

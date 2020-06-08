@@ -2,8 +2,7 @@
   <div class="header-container">
       <!-- 登録フォーム -->
 
-    <v-button type="success" @click="doOverrideRemotePromise">本地覆盖服务端数据</v-button>
-    <v-button type="success" @click="doOverrideLocalPromise">服务端覆盖本地数据</v-button>
+    <v-tag color="blue-inverse" v-model="todoName">{{todoName}}</v-tag>
     <v-form direction="horizontal" class="input-form" @submit.prevent="doAdd">
       <v-tag color="blue-inverse" class="form-label" for="aa">Todo</v-tag>
       <v-input type="text" placeholder="输入ToDo项" size="large" class="input-comment flex-grow-1" id="comment" ref="comment"></v-input>
@@ -40,6 +39,7 @@ export default {
       options: Object.values(TaskState),
       allOptionsValue: Object.values(TaskStateValue),
       filterOption: this.$store.getters.getSelectedState,
+      // todoName: this.$store.getters.getTodoName,
       isAllSelected: false,
       needFetchRemote: false
     }
@@ -128,12 +128,27 @@ export default {
   computed: {
     canRemove () {
       return this.$store.getters.getCanRemove
+    },
+    todoName: {
+      get () {
+        // return this.$store.getters.getFilteredTodos(this.filterOption, this.isAllSelected)
+        return this.$store.getters.getTodoName
+      },
+      // eslint-disable-next-line
+      set(value) {
+        // vuedraggable用
+      }
     }
   },
   mounted: function () {
     this.$store.dispatch(Type.SYNC_ACTION, this.filterOption)
-  }
+  },
+  watch: {
 
+    todoName: function (newtodo) {
+      console.log(newtodo)
+    }
+  }
 }
 </script>
 
