@@ -43,8 +43,8 @@ export default new Vuex.Store({
         selectAll
       )
     },
-    getTodoById: (state) => (id) => {
-      let index = state.todos.findIndex(v => v.id === id)
+    getTodoById: (state) => (sort) => {
+      let index = state.todos.findIndex(v => v.sort === sort)
       return index >= 0 ? state.todos[index] : null
     },
     getTaskCount: (state) => (taskState) => {
@@ -69,10 +69,10 @@ export default new Vuex.Store({
   mutations: {
     [Type.ADD_TASK] (state, payload) {
       if (state.todos.length > 0) {
-        state.lastUid = state.todos.reduce((a, b) => a.id > b.id ? a : b).id
+        state.lastUid = state.todos.reduce((a, b) => a.sort > b.sort ? a : b).sort
       }
       const todo = new Todo()
-      todo.id = state.lastUid + 1
+      todo.sort = state.lastUid + 1
       todo.comment = payload.data
       todo.state = TaskState[0].value
       todo.notifyTimestamp = formatDate(new Date(), 'yyyy-MM-dd HH:mm:ss')
@@ -81,17 +81,17 @@ export default new Vuex.Store({
       Storage.save(state.todos)
     },
     [Type.REMOVE_TASK] (state, payload) {
-      let index = state.todos.findIndex(v => v.id === payload.data)
+      let index = state.todos.findIndex(v => v.sort === payload.data)
       state.todos.splice(index, 1)
       Storage.save(state.todos)
 
       // 編集中なら削除
-      if (state.editingTodo !== null && state.editingTodo.id === payload.data) {
+      if (state.editingTodo !== null && state.editingTodo.sort === payload.data) {
         state.editingTodo = null
       }
     },
     [Type.CHANGE_STATE] (state, payload) {
-      let index = state.todos.findIndex(v => v.id === payload.data)
+      let index = state.todos.findIndex(v => v.sort === payload.data)
       let item = state.todos[index]
 
       switch (item.state) {
@@ -107,20 +107,20 @@ export default new Vuex.Store({
       }
       Storage.save(state.todos)
 
-      if (state.editingTodo !== null && state.editingTodo.id === payload.data) {
+      if (state.editingTodo !== null && state.editingTodo.sort === payload.data) {
         state.editingTodo.state = item.state
       }
     },
     [Type.UPDATE_TASK] (state, payload) {
-      let index = state.todos.findIndex(v => v.id === payload.data.id)
+      let index = state.todos.findIndex(v => v.sort === payload.data.sort)
       if (index >= 0) {
         Object.assign(state.todos[index], payload.data)
         Storage.save(state.todos)
       }
     },
     [Type.CHANGE_ORDER] (state, payload) {
-      let srcIndex = state.todos.findIndex(v => v.id === payload.src.id)
-      let destIndex = state.todos.findIndex(v => v.id === payload.dest.id)
+      let srcIndex = state.todos.findIndex(v => v.sort === payload.src.sort)
+      let destIndex = state.todos.findIndex(v => v.sort === payload.dest.sort)
       state.todos.splice(srcIndex, 1) // remove
       state.todos.splice(destIndex, 0, payload.src) // insert
       Storage.save(state.todos)
@@ -132,7 +132,7 @@ export default new Vuex.Store({
 
       // 編集中なら削除
       if (state.editingTodo !== null) {
-        let index = state.todos.findIndex(v => v.id === state.editingTodo.id)
+        let index = state.todos.findIndex(v => v.sort === state.editingTodo.sort)
         if (index < 0) {
           state.editingTodo = null
         }
@@ -143,7 +143,7 @@ export default new Vuex.Store({
     },
     [Type.EDIT_MODE] (state, payload) {
       if (payload !== null && payload.editing) {
-        const index = state.todos.findIndex(v => v.id === payload.id)
+        const index = state.todos.findIndex(v => v.sort === payload.sort)
         let todo = {}
         Object.assign(todo, state.todos[index]) // copy
         state.editingTodo = todo
@@ -180,11 +180,11 @@ export default new Vuex.Store({
     [Type.ADD_TASK] ({commit}, title) {
       commit(Type.ADD_TASK, {data: title})
     },
-    [Type.REMOVE_TASK] ({commit}, id) {
-      commit(Type.REMOVE_TASK, {data: id})
+    [Type.REMOVE_TASK] ({commit}, sort) {
+      commit(Type.REMOVE_TASK, {data: sort})
     },
-    [Type.CHANGE_STATE] ({commit}, id) {
-      commit(Type.CHANGE_STATE, {data: id})
+    [Type.CHANGE_STATE] ({commit}, sort) {
+      commit(Type.CHANGE_STATE, {data: sort})
     },
     [Type.UPDATE_TASK] ({commit}, todo) {
       commit(Type.UPDATE_TASK, {data: todo})
@@ -207,13 +207,13 @@ export default new Vuex.Store({
     [Type.CHANGE_FILTER] ({commit}, options) {
       commit(Type.CHANGE_FILTER, {data: options})
     },
-    [Type.EDIT_OVERRIDE_REMOTE] ({commit}, id) {
-      commit(Type.EDIT_OVERRIDE_REMOTE, {data: id})
+    [Type.EDIT_OVERRIDE_REMOTE] ({commit}, sort) {
+      commit(Type.EDIT_OVERRIDE_REMOTE, {data: sort})
     },
-    [Type.EDIT_OVERRIDE_LOCAL] ({commit}, id) {
-      commit(Type.EDIT_OVERRIDE_LOCAL, {data: id})
+    [Type.EDIT_OVERRIDE_LOCAL] ({commit}, sort) {
+      commit(Type.EDIT_OVERRIDE_LOCAL, {data: sort})
     },
-    [Type.SYNC_ACTION] ({ commit }) {
+    [Type.SYNC_ACTION] ({commit}) {
       // return new Promise(Storage.fetchFromRemote).then(function (result) {
       //   console.log('SYNC成功被回调')
       //   commit(Type.SYNC_ACTION, {data: result})
@@ -255,8 +255,9 @@ export default new Vuex.Store({
               todoName: todoName,
               todos: todos
             }
-            todos.forEach((todo) => {
+            todos.forEach((todo, index) => {
               todo['note'] = todo.note || ''
+              todo['sort'] = index + 1
             })
             console.log('成功跑完' + result)
             commit(Type.SYNC_ACTION, {result: result})

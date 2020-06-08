@@ -62,7 +62,7 @@ export default {
     update: function () {
       if (this.readonly) return
 
-      if (this.todo !== null && this.todo.id !== null) {
+      if (this.todo !== null && this.todo.sort !== null) {
         // commentの改行コードを削除
         this.todo.comment = this.todo.comment.replace(/\r?\n/g, '')
         this.todo.modifyTimestamp = Date.parse(new Date())
@@ -72,8 +72,8 @@ export default {
       }
     },
     deleteTodo: function () {
-      if (this.todo !== null && this.todo.id !== null) {
-        this.$store.dispatch(Type.REMOVE_TASK, this.todo.id)
+      if (this.todo !== null && this.todo.sort !== null) {
+        this.$store.dispatch(Type.REMOVE_TASK, this.todo.sort)
       }
     },
     /**
@@ -88,7 +88,7 @@ export default {
      * 表示内容をクリアする
      */
     clear: function () {
-      this.$store.dispatch(Type.EDIT_MODE, {id: null, editing: false})
+      this.$store.dispatch(Type.EDIT_MODE, {sort: null, editing: false})
     },
     onDateChange (time) {
       console.log('change:', time)
@@ -103,7 +103,7 @@ export default {
     // eslint-disable-next-line
     editingValue (newVal, oldVal) {
       if (newVal !== null) {
-        console.log('start:' + newVal.id)
+        console.log('start:' + newVal.sort)
         this.todo = newVal
         Object.assign(this.lastTodo, newVal)
         this.canEdit = true

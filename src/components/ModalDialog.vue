@@ -70,7 +70,7 @@ export default {
       }
     },
     deleteTodo: function () {
-      this.$store.dispatch(Type.REMOVE_TASK, this.todo.id)
+      this.$store.dispatch(Type.REMOVE_TASK, this.todo.sort)
       this.$emit('close')
     }
   },

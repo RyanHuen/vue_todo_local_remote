@@ -7,7 +7,7 @@
                   handle=".move-icon">
           <todo-item
             v-for="item in filteredTodos"
-            :key="item.id"
+            :key="item.sort"
             :todo="item"
             @changeState="doChangeState"
             @edit="editComment"
@@ -44,25 +44,25 @@ export default {
     /**
      * ステータスを変更する
      */
-    doChangeState: function (id) {
-      this.$store.dispatch(Type.CHANGE_STATE, id)
+    doChangeState: function (sort) {
+      this.$store.dispatch(Type.CHANGE_STATE, sort)
     },
     /**
      * 削除
      */
-    doRemove: function (id) {
-      this.$store.dispatch(Type.REMOVE_TASK, id)
+    doRemove: function (sort) {
+      this.$store.dispatch(Type.REMOVE_TASK, sort)
     },
     /**
      * コメント編集
      */
-    editComment: function (id) {
+    editComment: function (sort) {
       if (this.$isMobile()) {
         this.isModal = true
-        this.editingItem = this.$store.getters.getTodoById(id)
+        this.editingItem = this.$store.getters.getTodoById(sort)
       } else {
         // サイドメニューに表示
-        this.$store.dispatch(Type.EDIT_MODE, {id: id, editing: true})
+        this.$store.dispatch(Type.EDIT_MODE, {sort: sort, editing: true})
       }
     },
     /**

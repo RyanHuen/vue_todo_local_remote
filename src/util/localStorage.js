@@ -82,8 +82,9 @@ export default class Storage {
           todoName: todoName,
           todos: todos
         }
-        todos.forEach((todo) => {
+        todos.forEach((todo, index) => {
           todo['note'] = todo.note || ''
+          todo['id'] = index + 1
         })
         resolve(result)
       } else {

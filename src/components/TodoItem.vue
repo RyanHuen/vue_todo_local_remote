@@ -38,16 +38,16 @@ export default {
   },
   methods: {
     changeEventHandler: function () {
-      this.$emit('changeState', this.todo.id)
+      this.$emit('changeState', this.todo.sort)
     },
     badgeColor: function (state) {
       return getStateColor(state)
     },
     editEventHandler: function () {
-      this.$emit('edit', this.todo.id)
+      this.$emit('edit', this.todo.sort)
     },
     removeEventHandler: function () {
-      this.$emit('remove', this.todo.id)
+      this.$emit('remove', this.todo.sort)
     }
   },
   computed: {
@@ -57,7 +57,7 @@ export default {
     selected () {
       return (
         this.$store.getters.getEditingValue !== null &&
-        this.$store.getters.getEditingValue.id === this.todo.id
+        this.$store.getters.getEditingValue.sort === this.todo.sort
       )
     }
   }
