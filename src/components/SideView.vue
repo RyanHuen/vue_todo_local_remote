@@ -91,7 +91,12 @@ export default {
       this.$store.dispatch(Type.EDIT_MODE, {sort: null, editing: false})
     },
     onDateChange (time) {
+      var stringTime = time.toString()
+      var date = new Date(stringTime.replace(/-/g, '/'))
+      this.todo.notifyTimestamp = date.getTime()
       console.log('change:', time)
+      console.log('change:', date.getTime())
+      console.log('notifyTimestamp:', this.todo.notifyTimestamp)
     }
   },
   computed: {
