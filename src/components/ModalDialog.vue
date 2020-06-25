@@ -23,6 +23,11 @@
           </div>
 
           <div class="modal-footer">
+              <v-tag color="blue">邮件提醒时间 </v-tag>
+              <v-date-picker clearable show-time v-model="todo.notifyTimestamp" @change="onDateChange"></v-date-picker>
+          </div>
+
+          <div class="modal-footer">
             <button class="btn-regular modal-default-button" @click="update">OK</button>
             <button class="btn-default modal-default-button" @click="cancel">Cancel</button>
             <button class="btn-default modal-default-button" @click="deleteTodo">Delete</button>
@@ -72,6 +77,14 @@ export default {
     deleteTodo: function () {
       this.$store.dispatch(Type.REMOVE_TASK, this.todo.sort)
       this.$emit('close')
+    },
+    onDateChange (time) {
+      var stringTime = time.toString()
+      var date = new Date(stringTime.replace(/-/g, '/'))
+      this.todo.notifyTimestamp = date.getTime()
+      console.log('change:', time)
+      console.log('change:', date.getTime())
+      console.log('notifyTimestamp:', this.todo.notifyTimestamp)
     }
   },
   created () {
@@ -107,7 +120,7 @@ export default {
 }
 
 .modal-wrapper {
-  display: table-cell;
+  display: flex;
   vertical-align: middle;
 }
 
@@ -129,7 +142,7 @@ export default {
 
 .modal-footer {
   margin: 5px 0;
-  height: 20px;
+  height: auto;
 }
 
 .input-text {

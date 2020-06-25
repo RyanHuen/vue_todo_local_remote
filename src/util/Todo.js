@@ -1,5 +1,6 @@
 export class Todo {
   constructor () {
+    this.todo_item_id = ''
     this.sort = -1
     this.comment = ''
     this.state = 0
