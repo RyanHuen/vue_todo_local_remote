@@ -7,6 +7,7 @@ import {Type} from './mutation-types'
 import axios from 'axios'
 import Cookies from 'js-cookie'
 import {formatDate} from '@/util/DateFormat'
+import global from '@/common/Common.js'
 
 Vue.use(Vuex)
 
@@ -72,6 +73,7 @@ export default new Vuex.Store({
         state.lastUid = state.todos.reduce((a, b) => a.sort > b.sort ? a : b).sort
       }
       const todo = new Todo()
+      todo.todo_item_id = payload.todo_item_id
       todo.sort = state.lastUid + 1
       todo.comment = payload.data
       todo.state = TaskState[0].value
@@ -178,7 +180,32 @@ export default new Vuex.Store({
   // データの加工、非同期処理
   actions: {
     [Type.ADD_TASK] ({commit}, title) {
-      commit(Type.ADD_TASK, {data: title})
+      var instance = axios.create({
+        headers: {'content-type': 'application/json', 'X-CSRFToken': Cookies.get('csrftoken')}
+      })
+      var todoSetId = global.todoSetId
+      console.log('muxi todoSetId: ' + todoSetId)
+      if (todoSetId === undefined) {
+        alert('创建失败，请稍后重试')
+        return
+      }
+      var requestJson = {'todoSetId': todoSetId, 'comment': title}
+      return instance.post('/todo_list/create_new_item/', JSON.stringify(requestJson))
+        .then(response => {
+          var data = response.data
+          console.log(data)
+          if (data !== null) {
+            var todoItemId = data['todo_item_id']
+            commit(Type.ADD_TASK, {data: title, todo_item_id: todoItemId})
+          } else {
+            alert('创建失败，请稍后重试')
+            console.log('数据非法')
+          }
+        })
+        .catch(function (error) {
+          console.log(error)
+          alert('创建失败，请稍后重试')
+        })
     },
     [Type.REMOVE_TASK] ({commit}, sort) {
       commit(Type.REMOVE_TASK, {data: sort})
@@ -214,24 +241,6 @@ export default new Vuex.Store({
       commit(Type.EDIT_OVERRIDE_LOCAL, {data: sort})
     },
     [Type.SYNC_ACTION] ({commit}) {
-      // return new Promise(Storage.fetchFromRemote).then(function (result) {
-      //   console.log('SYNC成功被回调')
-      //   commit(Type.SYNC_ACTION, {data: result})
-      // }).catch(function (reason) {
-      //   // var data = JSON.parse('{"name":"打卡TODO","todo_list":[{"createTimestamp":"2020-06-03 00:07:00","modifyTimestamp":"2020-06-03 00:07:00","notifyTimestamp":"2020-06-03 00:06:00","state":1,"comment":"Test_TITLE1","note":"TEST_CONTENT1"},{"createTimestamp":"2020-06-03 00:13:00","modifyTimestamp":"2020-06-03 00:13:00","notifyTimestamp":"2020-06-03 00:11:00","state":1,"comment":"TEST_TITLE2","note":"TEST_CONTENT2"}]}')
-      //   // var todoList = data['todo_list']
-      //   // var todoName = data['name']
-      //   // let todos = todoList
-      //   // var result = {
-      //   //   todoName: todoName,
-      //   //   todos: todos
-      //   // }
-      //   // commit(Type.SYNC_ACTION, {result: result})
-      //   console.log('SYNC失败被回调')
-      //
-      //   commit(Type.SYNC_ACTION, {result: ''})
-      // })
-
       var instance = axios.create({
         headers: {'content-type': 'application/json', 'X-CSRFToken': Cookies.get('csrftoken')}
       })
@@ -255,9 +264,12 @@ export default new Vuex.Store({
               todoName: todoName,
               todos: todos
             }
+            todos.sort(function (a, b) {
+              // order是规则  objs是需要排序的数组
+              return a.sort - b.sort
+            })
             todos.forEach((todo, index) => {
               todo['note'] = todo.note || ''
-              todo['sort'] = index + 1
             })
             console.log('成功跑完' + result)
             commit(Type.SYNC_ACTION, {result: result})

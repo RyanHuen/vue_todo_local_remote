@@ -20,23 +20,14 @@ export default class Storage {
   }
 
   static doOverrideRemotePromise (todos, retry) {
+    todos.forEach(function (item, index, array) {
+      item.sort = index
+    })
     var todoData = JSON.stringify(todos)
     var path = window.location.pathname
     var todoSetId = Storage.subTodoSetIdFromPath(path)
     var json = {'todoSetId': todoSetId, 'todo': todoData}
     console.log('存储' + todoData)
-    //
-    // $.ajax({
-    //   url: '/test_about_post',
-    //   data: JSON.stringify(todos),
-    //   type: 'POST',
-    //   dataType: 'json',
-    //   success: function () {
-    //     // console.log("fingerprint report success: " + fingerprint);
-    //   }
-    // })
-
-    // var qs = require('qs')
     var instance = axios.create({
       headers: {'content-type': 'application/json', 'X-CSRFToken': Cookies.get('csrftoken')}
     })
