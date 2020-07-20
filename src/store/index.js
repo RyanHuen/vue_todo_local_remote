@@ -74,7 +74,6 @@ export default new Vuex.Store({
       }
       const todo = new Todo()
       todo.todo_item_id = payload.todo_item_id
-      todo.sort = state.lastUid + 1
       todo.comment = payload.data
       todo.state = TaskState[0].value
       todo.notifyTimestamp = formatDate(new Date(), 'yyyy-MM-dd HH:mm:ss')
@@ -264,12 +263,9 @@ export default new Vuex.Store({
               todoName: todoName,
               todos: todos
             }
-            todos.sort(function (a, b) {
-              // order是规则  objs是需要排序的数组
-              return a.sort - b.sort
-            })
             todos.forEach((todo, index) => {
               todo['note'] = todo.note || ''
+              todo['sort'] = index
             })
             console.log('成功跑完' + result)
             commit(Type.SYNC_ACTION, {result: result})
